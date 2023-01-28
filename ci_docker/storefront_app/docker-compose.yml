@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  storefront:
+    build: ../../
+    container_name: storefront_container
+    volumes:
+      - ../../:/app
+    ports:
+      - 8000:8000
+    image: app:django
+    command: python manage.py runserver 0.0.0.0:8000
+    networks:
+      - storefront-bridge-network
+
+networks:
+  storefront-bridge-network:
+    external: true
