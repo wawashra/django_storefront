@@ -5,19 +5,5 @@
     {% else %}
     <h1>Hello World</h1>
     {% endif %}
-
-    <ul>
-      {% for prod in products %}
-      <li>{{ prod.title }} - {{ prod.collection.title }}</li>
-      {% endfor%}
-    </ul>
-
-    <ul>
-      {% for order in orders %}
-      <li>{{ order.id }} - {{ order.customer.first_name }}</li>
-      {% endfor%}
-    </ul>
-
-    <h1>{{ res }}</h1>
   </body>
 </html>
