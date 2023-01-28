@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  db:
+    image: mysql:8
+    container_name: storefront_mysql_database_container
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootSecAct
+      - MYSQL_PASSWORD=mysqlSecAct
+      - MYSQL_USER=store
+      - MYSQL_DATABASE=storefront
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql8:/var/lib/mysql
+    networks:
+      - storefront-bridge-network
+
+volumes:
+  mysql8:
+
+networks:
+  storefront-bridge-network:
+    external: true
