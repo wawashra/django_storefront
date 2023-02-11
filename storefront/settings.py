@@ -36,8 +36,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'playground',
     'debug_toolbar',
+    'rest_framework',
+    'playground',
     'store',
     'store_custom',
     'tags',
@@ -60,6 +61,11 @@ INTERNAL_IPS = [
     '127.0.0.1',
     # ...
 ]
+
+# https://knasmueller.net/fix-djangos-debug-toolbar-not-showing-inside-docker
+import socket
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+INTERNAL_IPS += [".".join(ip.split(".")[:-1] + ["1"]) for ip in ips]
 
 ROOT_URLCONF = 'storefront.urls'
 
@@ -139,3 +145,7 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'COERCE_DECIMAL_TO_STRING': False
+}
