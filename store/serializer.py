@@ -37,16 +37,14 @@ class ProductSerializer(serializers.ModelSerializer):
     #     source='collection'
     # )
     # collection = CollectionSerializer()
-    
-    price_with_tax = serializers.SerializerMethodField(
-        method_name='calculate_tax'
-    )
-    
     # collection_htys = serializers.HyperlinkedRelatedField(
     #     source='collection',
     #     queryset=Collection.objects.all(),
     #     view_name='collection-detail'
     # )
+    price_with_tax = serializers.SerializerMethodField(
+        method_name='calculate_tax'
+    )
 
     def calculate_tax(self, product: Product) -> Decimal:
         return product.unit_price * Decimal(1.1)
