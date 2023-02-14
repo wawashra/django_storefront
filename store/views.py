@@ -1,15 +1,15 @@
-from rest_framework.response import Response
-from rest_framework.request import Request
-from rest_framework import status
-from rest_framework.viewsets import ModelViewSet
 from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.request import Request
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.pagination import PageNumberPagination
 from store.filters import ProductFilter
 from store.pagination import DefaultPagination
-from .models import Product, Collection, OrderItem, Review
-from .serializer import ProductSerializer, CollectionSerializer, ReviewSerializer
+from .models import Cart, Product, Collection, OrderItem, Review
+from .serializer import CartSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer
 
 # Create your views here.
 
@@ -58,3 +58,7 @@ class ReviewModelViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         return {'product_id': self.kwargs['product_pk']}
+
+class CartModelViewSet(CreateModelMixin, RetrieveModelMixin,GenericViewSet):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer 
