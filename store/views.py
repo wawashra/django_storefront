@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.filters import SearchFilter, OrderingFilter
 from store.filters import ProductFilter
 from store.pagination import DefaultPagination
@@ -13,42 +13,51 @@ from .serializer import CartSerializer, ProductSerializer, CollectionSerializer,
 
 # Create your views here.
 
+
 class ProductModelViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    
+
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
 
     filterset_class = ProductFilter
-    
+
     search_fields = ['title', 'description']
-    
+
     ordering_fields = ['unit_price', 'last_update']
-    
+
     pagination_class = DefaultPagination
 
     def get_serializer_context(self):
         return {'request': self.request}
-    
+
     def destroy(self, request, *args, **kwargs):
         if OrderItem.objects.filter(product_id=kwargs['pk']).count() > 0:
-            return Response({'error': 'Product cannot be deleted because it is associated with an order item.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-         
+            return Response(
+                {'error': 'Product cannot be deleted because it is associated with an order item.'},
+                status=status.HTTP_405_METHOD_NOT_ALLOWED
+            )
+
         return super().destroy(request, *args, **kwargs)
 
+
 class CollectionModelViewSet(ModelViewSet):
-    queryset = Collection.objects.annotate(products_count=Count('products')).all()
+    queryset = Collection.objects.annotate(
+        products_count=Count('products')).all()
     serializer_class = CollectionSerializer
     pagination_class = DefaultPagination
 
     def get_serializer_context(self):
         return {'request': self.request}
-    
+
     def destroy(self, request, *args, **kwargs):
         if Product.objects.filter(collection=kwargs['pk']).count() > 0:
-            return Response({'error': 'Collection cannot be deleted because it includes one or more products.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
+            return Response(
+                {'error': 'Collection cannot be deleted because it includes one or more products.'},
+                status=status.HTTP_405_METHOD_NOT_ALLOWED
+            )
         return super().destroy(request, *args, **kwargs)
+
 
 class ReviewModelViewSet(ModelViewSet):
     serializer_class = ReviewSerializer
@@ -59,6 +68,10 @@ class ReviewModelViewSet(ModelViewSet):
     def get_serializer_context(self):
         return {'product_id': self.kwargs['product_pk']}
 
-class CartModelViewSet(CreateModelMixin, RetrieveModelMixin,GenericViewSet):
+
+class CartModelViewSet(CreateModelMixin,
+                       RetrieveModelMixin,
+                       DestroyModelMixin,
+                       GenericViewSet):
     queryset = Cart.objects.prefetch_related('items__product').all()
-    serializer_class = CartSerializer 
+    serializer_class = CartSerializer

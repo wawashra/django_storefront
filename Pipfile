@@ -11,6 +11,7 @@ drf-nested-routers = "==0.93.3"
 django-filter = "==22.1"
 
 [dev-packages]
+autopep8 = "*"
 
 [requires]
 python_version = "3.9"
