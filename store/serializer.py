@@ -85,3 +85,41 @@ class CartSerializer(serializers.ModelSerializer):
     
     def get_total_price(self, cart: Cart):
         return sum([item.quantity * item.product.unit_price for item in cart.items.all()])
+
+class AddCartItemSerializer(serializers.ModelSerializer):
+    product_id = serializers.IntegerField()
+    
+    def validate_product_id(self, product_id):
+        if not Product.objects.filter(pk=product_id).exists():
+            raise serializers.ValidationError(f'No product with given {product_id=} was found.')
+        return product_id
+    
+    
+    def save(self, **kwargs):
+        #  data are came from client
+        product_id = self.validated_data['product_id']
+        quantity = self.validated_data['quantity']
+        
+        # came from url, passed via view by overwrite get_serializer_context
+        cart_id = self.context['cart_id']
+        
+        try:
+            cart_item = CartItem.objects.get(cart_id=cart_id, product_id=product_id)
+            # update current Item
+            cart_item.quantity += quantity
+            cart_item.save()
+            self.instance = cart_item
+        except CartItem.DoesNotExist:
+            # create new Item
+            self.instance = CartItem.objects.create(cart_id=cart_id, **self.validated_data)
+            
+        return self.instance
+
+    class Meta:
+        model = CartItem
+        fields = ['id', 'product_id', 'quantity']
+
+class UpdateCartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
+        fields = ['quantity']
