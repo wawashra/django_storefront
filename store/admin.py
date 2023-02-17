@@ -72,7 +72,7 @@ class CollectionAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
-            products_count=Count('product')
+            products_count=Count('products')
         )
 
 
@@ -113,3 +113,8 @@ class OrderAdmin(admin.ModelAdmin):
     autocomplete_fields = ['customer']
     inlines = [OrderItemInline]
     list_display = ['id', 'placed_at', 'customer']
+
+@admin.register(models.Promotion)
+class PromotionAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['product']
+    list_display = ['id', 'description']
