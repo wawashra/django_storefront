@@ -6,3 +6,5 @@ django-debug-toolbar==3.8.1
 djangorestframework==3.12.4
 drf-nested-routers==0.93.3
 django-filter==22.1
+djoser==2.1.0
+djangorestframework_simplejwt==4.8.0
