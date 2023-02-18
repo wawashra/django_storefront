@@ -9,7 +9,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from store.filters import ProductFilter
 from store.pagination import DefaultPagination
 from .models import Cart, CartItem, Product, Collection, OrderItem, Review
-from .serializer import CartSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer
+from .serializers import CartSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer
 
 # Create your views here.
 
