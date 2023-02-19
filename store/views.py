@@ -13,7 +13,7 @@ from store.filters import ProductFilter
 from store.pagination import DefaultPagination
 from .models import Cart, CartItem, Product, Collection, OrderItem, Review, Customer
 from .serializers import CartSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer, CustomerSerializer
-
+from .permissions import IsAdminOrReadOnly
 # Create your views here.
 
 
@@ -30,6 +30,8 @@ class ProductModelViewSet(ModelViewSet):
     ordering_fields = ['unit_price', 'last_update']
 
     pagination_class = DefaultPagination
+    
+    permission_classes = [IsAdminOrReadOnly]
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -49,6 +51,9 @@ class CollectionModelViewSet(ModelViewSet):
         products_count=Count('products')).all()
     serializer_class = CollectionSerializer
     pagination_class = DefaultPagination
+    
+    permission_classes = [IsAdminOrReadOnly]
+
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -95,10 +100,10 @@ class CartItemModelViewSet(ModelViewSet):
     def get_queryset(self):
         return CartItem.objects.filter(cart_id=self.kwargs['cart_pk']).select_related('product')
 
-class CustomerViewSet(CreateModelMixin, UpdateModelMixin, RetrieveModelMixin, GenericViewSet):
+class CustomerViewSet(ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     
     @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
     def me(self, request):
